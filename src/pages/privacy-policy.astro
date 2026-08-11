@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections: [string, string][] = [
+	[
+		'Information we collect',
+		"ClipU doesn't require an account, so we don't collect names, emails, or passwords to use the tool. When you paste a YouTube link, that URL and the start/end times you choose are sent to our server to generate your clip. Standard server logs (like IP address and request time) may be recorded briefly for security and abuse prevention.",
+	],
+	[
+		'How we use information',
+		"The YouTube link and time range you submit are used only to fetch the video, trim it to your selection, and stream the resulting file back to you. We don't sell, share, or use this information for advertising.",
+	],
+	[
+		'Cookies & local storage',
+		"ClipU doesn't use tracking or advertising cookies. We store one preference — light or dark mode — in your browser's local storage, purely so the site remembers your choice on your next visit.",
+	],
+	[
+		'Third-party services',
+		'ClipU fetches video data from YouTube in order to generate your clip. Your use of YouTube content remains subject to YouTube\'s own Terms of Service.',
+	],
+	[
+		'Data retention',
+		"Clips are generated on request and streamed straight to your download — the video and audio files aren't stored on our servers afterward.",
+	],
+	[
+		"Children's privacy",
+		'ClipU is not directed at children under 13, and we do not knowingly collect information from them.',
+	],
+	[
+		'Changes to this policy',
+		'We may update this policy from time to time. Continued use of ClipU after a change means you accept the updated policy.',
+	],
+];
+---
+
+<Layout
+	title="Privacy Policy — ClipU"
+	description="How ClipU handles data when you use our free online YouTube video cutter."
+>
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-16">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px] text-center">Privacy Policy</h1>
+			<p class="mt-4 text-sm text-mute text-center">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</p>
+
+			<div class="mt-10 flex flex-col gap-8">
+				{
+					sections.map(([title, body]) => (
+						<div>
+							<h2 class="text-lg font-semibold text-ink">{title}</h2>
+							<p class="mt-2 text-base text-body leading-7">{body}</p>
+						</div>
+					))
+				}
+				<div>
+					<h2 class="text-lg font-semibold text-ink">Contact</h2>
+					<p class="mt-2 text-base text-body leading-7">
+						Questions about this policy? Reach us at
+						<a href="mailto:support@ytclipu.com" class="text-link hover:underline">support@ytclipu.com</a>
+						or visit our <a href="/contact-us" class="text-link hover:underline">Contact page</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	</main>
+</Layout>

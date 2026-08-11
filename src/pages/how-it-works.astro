@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const steps: [string, string][] = [
+	[
+		'Paste the link',
+		"Copy any public YouTube URL and drop it into the box on the home page. ClipU fetches the video's title, thumbnail, duration, and every resolution it's available in — nothing downloads yet.",
+	],
+	[
+		'Set your start and end point',
+		'Drag the two handles on the trim bar to the exact moment you want. The live preview and the estimated file size update as you move them, so you know what you\'re getting before you commit.',
+	],
+	[
+		'Choose a format',
+		'Pick MP4 to keep the video at your selected quality, or MP3 to export audio only. Only the range you selected gets processed — not the whole video.',
+	],
+	[
+		'Download',
+		'Your clip is generated on request and streams straight to your device. It isn\'t stored anywhere afterward.',
+	],
+];
+---
+
+<Layout
+	title="How it works — ClipU"
+	description="How ClipU turns a YouTube link into a downloadable MP4 or MP3 clip, step by step."
+>
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-4 text-center">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px]">How it works</h1>
+			<p class="mt-4 text-lg text-body leading-8">
+				Four steps, all in the browser. No installs, no account, no waiting on a full download.
+			</p>
+		</div>
+
+		<div class="max-w-2xl mx-auto px-4 py-16">
+			<ol class="flex flex-col gap-10">
+				{
+					steps.map(([title, desc], i) => (
+						<li class="flex gap-5">
+							<span class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-ink text-on-primary font-mono text-sm">
+								{i + 1}
+							</span>
+							<div>
+								<p class="text-base font-medium text-ink">{title}</p>
+								<p class="mt-1 text-base text-body leading-7">{desc}</p>
+							</div>
+						</li>
+					))
+				}
+			</ol>
+
+			<div class="mt-14 flex justify-center">
+				<a
+					href="/"
+					class="rounded-pill bg-ink text-on-primary px-5 h-10 inline-flex items-center text-base font-medium hover:opacity-90"
+				>
+					Try it now
+				</a>
+			</div>
+		</div>
+	</main>
+</Layout>

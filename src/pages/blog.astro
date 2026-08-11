@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const posts = [
+	{
+		title: 'MP4 or MP3: which should you download?',
+		summary: 'A quick way to decide based on what you actually need the clip for.',
+		body: [
+			"If you need to watch it, quote it visually, or repost it, download MP4 — you keep the picture and the sound. If all you actually need is the audio (a soundbite for a podcast, a quote for a voiceover, a lecture segment to relisten to), MP3 is the better call: the file is a fraction of the size and downloads faster.",
+			"A rough rule: a 30-second MP4 at 720p runs a few megabytes; the same 30 seconds as MP3 is usually under a megabyte. If bandwidth or storage is tight and you don't need the visual, MP3 wins every time.",
+		],
+	},
+	{
+		title: "How to grab a 10-second clip without opening an editor",
+		summary: 'The whole workflow, start to finish, in under a minute.',
+		body: [
+			'Paste the YouTube link into ClipU. Once the metadata loads, drag the left handle on the trim bar to where the moment starts and the right handle to where it ends — the live preview shows exactly what you\'ve got.',
+			"Pick a quality if you're exporting MP4, hit Download, and the clip renders and saves to your device. There's no project file, no timeline, no export settings to configure — just the ten seconds you actually wanted.",
+		],
+	},
+	{
+		title: "Why your clip's file size varies by resolution",
+		summary: 'What the size estimate on the trim screen is actually calculating.',
+		body: [
+			'Video file size scales with three things: how long the clip is, how high the resolution is, and how much motion is in the frame. ClipU\'s size estimate accounts for the first two — duration and your selected quality — using typical bitrates for each resolution.',
+			"That's why dropping from 1080p to 480p on the same clip can cut the estimated size by more than half: fewer pixels per frame means less data to encode, even though the clip length hasn't changed.",
+		],
+	},
+];
+---
+
+<Layout
+	title="Blog — ClipU"
+	description="Short, practical notes on clipping YouTube video — formats, workflow, and how ClipU works under the hood."
+>
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-4 text-center">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px]">Blog</h1>
+			<p class="mt-4 text-lg text-body leading-8">Short, practical notes on clipping video.</p>
+		</div>
+
+		<div class="max-w-2xl mx-auto px-4 py-16 flex flex-col gap-14">
+			{
+				posts.map((post) => (
+					<article class="border-t border-hairline pt-10 first:border-t-0 first:pt-0">
+						<h2 class="text-xl font-semibold text-ink tracking-[-0.6px]">{post.title}</h2>
+						<p class="mt-1 text-base text-mute">{post.summary}</p>
+						<div class="mt-4 flex flex-col gap-4">
+							{post.body.map((para) => (
+								<p class="text-base text-body leading-7">{para}</p>
+							))}
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</main>
+</Layout>

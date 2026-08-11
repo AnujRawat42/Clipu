@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections: [string, string][] = [
+	[
+		'Using ClipU',
+		'ClipU lets you trim a public YouTube video to a chosen range and download it as MP4 or MP3. The service is free, requires no account, and is provided as-is, without any guarantee of uninterrupted availability.',
+	],
+	[
+		'Your responsibility for content',
+		"You're responsible for making sure you have the right to download and use the content you clip — for example, videos you own, videos licensed for personal use, or content in the public domain. ClipU is a tool for trimming and downloading; it doesn't grant you any rights to copyrighted material you don't already have.",
+	],
+	[
+		'Acceptable use',
+		"Don't use ClipU to infringe copyright, redistribute or resell downloaded content at scale, or attempt to abuse, overload, or reverse-engineer the service. We reserve the right to restrict access for use that violates these terms.",
+	],
+	[
+		'Clip limits',
+		'To keep the service fast for everyone, individual clips are capped at 10 minutes per export. This limit may change without notice.',
+	],
+	[
+		'Availability of private or restricted videos',
+		"ClipU only works with videos that are publicly viewable on YouTube without signing in. Private, unlisted, or age-restricted videos aren't supported.",
+	],
+	[
+		'No warranty',
+		'ClipU is provided "as is," without warranties of any kind. We do not guarantee that the service will be error-free, uninterrupted, or fit for any particular purpose.',
+	],
+	[
+		'Limitation of liability',
+		"To the extent permitted by law, ClipU and its operators aren't liable for any indirect, incidental, or consequential damages arising from your use of the service.",
+	],
+	[
+		'Changes to these terms',
+		'We may update these terms from time to time. Continued use of ClipU after a change means you accept the updated terms.',
+	],
+];
+---
+
+<Layout
+	title="Terms & Conditions — ClipU"
+	description="The terms that apply when you use ClipU's free online YouTube video cutter."
+>
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-16">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px] text-center">Terms &amp; Conditions</h1>
+			<p class="mt-4 text-sm text-mute text-center">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</p>
+
+			<div class="mt-10 flex flex-col gap-8">
+				{
+					sections.map(([title, body]) => (
+						<div>
+							<h2 class="text-lg font-semibold text-ink">{title}</h2>
+							<p class="mt-2 text-base text-body leading-7">{body}</p>
+						</div>
+					))
+				}
+				<div>
+					<h2 class="text-lg font-semibold text-ink">Contact</h2>
+					<p class="mt-2 text-base text-body leading-7">
+						Questions about these terms? Reach us at
+						<a href="mailto:support@ytclipu.com" class="text-link hover:underline">support@ytclipu.com</a>
+						or visit our <a href="/contact-us" class="text-link hover:underline">Contact page</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	</main>
+</Layout>

@@ -1,11 +1,689 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const faqs: [string, string][] = [
+	['Is ClipU really free?', 'Yes. There is no paid tier, no watermark, and no download limit.'],
+	['Do I need to create an account?', 'No. There is no login and nothing is saved to an account — paste a link and use it.'],
+	['What formats can I download?', 'MP4 for video, at any resolution the source video was uploaded in, or MP3 for audio only.'],
+	['Is there a limit on clip length?', 'Clips are capped at 10 minutes per export to keep the tool fast for everyone.'],
+	['Do you store my videos?', "No. Your clip is generated on request and streamed straight to your download — it isn't kept afterward."],
+	['Does it work with private or age-restricted videos?', 'No, only videos that are publicly viewable on YouTube without signing in.'],
+	['How to download a specific part of a YouTube video?', 'Paste the link into ClipU, then drag the trim handles — or type the start and end time directly — to the range you want. Choose MP4 and download just that part, not the whole video.'],
+	['How to download a YouTube video from a link?', 'Paste the YouTube link into the box at the top of the page. Once it loads, pick a quality, choose MP4, and download — trim it first if you only want part of it.'],
+	['How to download a YouTube Shorts video from a link?', 'The same way as any other video: paste the Shorts link into ClipU, wait for it to load, choose MP4, and download. No separate mode needed for Shorts.'],
+	['How to download audio from a YouTube link?', 'Paste the link, switch the format toggle to MP3, set your start and end point if you only want part of it, and download.'],
+	['How do I extract part of the audio from a YouTube video?', 'Paste the video link, drag the trim handles (or type the exact times) to the section you want, switch to MP3, and download — only that segment is exported.'],
+	['How do I download certain parts of YouTube?', 'ClipU lets you trim any public YouTube video to the exact range you need before downloading, instead of grabbing the whole thing. Set your start and end time, then export as MP4 or MP3.'],
+	['How do I download a portion of a song?', "If the song is in a public YouTube video, paste that link, trim to the section you want, choose MP3, and download just that portion."],
+	['How do I extract a part of a YouTube video?', 'Paste the link, drag the two trim handles to the start and end of the part you want, and download it as MP4.'],
+	['Can I download specific parts of a YouTube video?', 'Yes — that\'s the core of what ClipU does. Set a custom start and end time on the timeline and only that range gets downloaded.'],
+	['How do I cut a part of a YouTube video and download it?', 'Paste the link, drag the handles (or type the times) to trim it, pick MP4, and hit download. The cut clip downloads straight to your device.'],
+	['How to extract audio from part of a YouTube video?', 'Trim the video to the section you want using the start and end time boxes, switch the format to MP3, and download — you get audio for just that segment, not the full track.'],
+];
 ---
 
 <Layout>
-	<Welcome />
+	<main class="relative min-h-screen bg-canvas-soft text-ink font-sans flex flex-col items-center px-4 pb-24 gap-6 overflow-hidden">
+		<div class="hero-mesh pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-[0.16] blur-3xl"></div>
+		<div class="line-pattern pointer-events-none absolute inset-x-0 top-[280px] h-[420px] opacity-40"></div>
+
+		<div class="relative flex flex-col items-center gap-4 text-center pt-28 pb-3 max-w-2xl">
+			<img
+				src="/android-chrome-192x192.png"
+				alt="ClipU logo"
+				class="h-24 w-24 rounded-2xl shadow-[0px_4px_12px_#00000014] motion-safe:animate-[logo-float_3s_ease-in-out_infinite]"
+			/>
+			<span class="text-sm font-medium text-mute tracking-wide">ClipU</span>
+			<h1 class="text-[40px] sm:text-[64px] font-bold leading-[1.05] tracking-[-2px]">
+				Clip any YouTube video in seconds
+			</h1>
+			<p
+				id="tagline"
+				class="text-lg text-body leading-8 min-h-16 sm:min-h-0 transition-all duration-300 ease-out max-w-md"
+			>
+				Paste a YouTube link, trim the exact moment, download MP4 or MP3.
+			</p>
+		</div>
+
+		<form id="url-form" class="relative w-full max-w-lg flex flex-col gap-2 mt-8">
+			<label for="url-input" class="sr-only">YouTube URL</label>
+			<div class="flex items-center gap-1.5 rounded-pill bg-canvas border border-hairline shadow-[0px_1px_1px_#00000005,0px_8px_20px_#00000014] p-1.5">
+				<div class="relative flex-1">
+					<svg
+						class="absolute left-4 top-1/2 -translate-y-1/2 text-mute"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.75"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+						<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+					</svg>
+					<input
+						id="url-input"
+						type="url"
+						required
+						placeholder="https://youtube.com/watch?v=…"
+						class="w-full h-11 rounded-pill bg-transparent border-none pl-10 pr-3 text-base text-ink placeholder:text-mute outline-none"
+					/>
+				</div>
+				<button
+					type="submit"
+					id="load-btn"
+					class="rounded-pill bg-ink text-on-primary px-5 h-11 text-base font-medium hover:opacity-90 disabled:opacity-50 shrink-0"
+				>
+					Load
+				</button>
+			</div>
+			<p class="text-sm text-mute px-1 text-center">Works with any public YouTube video link.</p>
+		</form>
+
+		<nav class="relative flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-mute">
+			<a href="/about-us" class="hover:text-ink">About Us</a>
+			<a href="/contact-us" class="hover:text-ink">Contact Us</a>
+			<a href="/privacy-policy" class="hover:text-ink">Privacy Policy</a>
+			<a href="/terms-and-conditions" class="hover:text-ink">Terms &amp; Conditions</a>
+		</nav>
+
+		<p id="error" class="text-base text-error hidden" role="alert"></p>
+
+		<section
+			id="editor"
+			class="w-full max-w-lg flex flex-col gap-6 hidden bg-canvas rounded-lg border border-hairline p-6 shadow-[0px_1px_1px_#00000005,0px_8px_24px_#00000014] motion-safe:animate-[fade-in_0.25s_ease-out]"
+		>
+			<div class="flex gap-4 items-start">
+				<img id="thumb" class="w-32 rounded-sm border border-hairline hidden" alt="" />
+				<div class="flex-1 min-w-0">
+					<p id="title" class="text-sm font-medium text-ink truncate"></p>
+					<p id="duration" class="text-xs text-mute mt-1 font-mono"></p>
+				</div>
+			</div>
+
+			<div>
+				<div class="flex justify-between text-xs text-body mb-2">
+					<span class="flex items-center gap-1">
+						Start:
+						<label for="start-time-input" class="sr-only">Clip start time (M:SS)</label>
+						<input
+							id="start-time-input"
+							type="text"
+							inputmode="numeric"
+							class="font-mono text-ink bg-transparent border border-hairline rounded-sm w-14 px-1 py-0.5 text-center outline-none focus:border-hairline-strong"
+							value="0:00"
+						/>
+					</span>
+					<span class="flex items-center gap-1">
+						End:
+						<label for="end-time-input" class="sr-only">Clip end time (M:SS)</label>
+						<input
+							id="end-time-input"
+							type="text"
+							inputmode="numeric"
+							class="font-mono text-ink bg-transparent border border-hairline rounded-sm w-14 px-1 py-0.5 text-center outline-none focus:border-hairline-strong"
+							value="0:00"
+						/>
+					</span>
+				</div>
+				<div class="relative h-4 flex items-center">
+					<div class="absolute inset-x-0 h-1 rounded-full bg-hairline"></div>
+					<div id="trim-fill" class="absolute h-1 rounded-full bg-ink"></div>
+					<label for="start-range" class="sr-only">Clip start time</label>
+					<input id="start-range" type="range" min="0" step="1" class="range-thumb" />
+					<label for="end-range" class="sr-only">Clip end time</label>
+					<input id="end-range" type="range" min="0" step="1" class="range-thumb" />
+				</div>
+			</div>
+
+			<iframe
+				id="preview"
+				class="w-full aspect-video rounded-sm bg-ink hidden"
+				allow="autoplay; encrypted-media"
+				allowfullscreen
+			></iframe>
+
+			<div class="flex gap-3">
+				<div class="flex-1">
+					<label for="quality" class="sr-only">Video quality</label>
+					<select id="quality" class="w-full h-10 rounded-sm bg-canvas border border-hairline px-3 text-base text-ink"></select>
+				</div>
+				<div id="format-toggle" class="relative flex rounded-sm border border-hairline p-0.5 shrink-0">
+					<div
+						id="format-indicator"
+						class="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-[4px] bg-ink motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
+					>
+					</div>
+					<button
+						type="button"
+						data-format="mp4"
+						aria-pressed="true"
+						class="format-btn relative z-10 w-16 h-9 text-sm font-medium text-on-primary transition-colors"
+					>
+						MP4
+					</button>
+					<button
+						type="button"
+						data-format="mp3"
+						aria-pressed="false"
+						class="format-btn relative z-10 w-16 h-9 text-sm font-medium text-ink transition-colors"
+					>
+						MP3
+					</button>
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between">
+				<p id="size-estimate" class="text-xs text-mute font-mono"></p>
+				<button
+					id="download-btn"
+					class="inline-flex items-center gap-2 rounded-pill bg-ink text-on-primary px-5 h-10 text-base font-medium hover:opacity-90 disabled:opacity-50"
+				>
+					<svg
+						id="download-icon"
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M12 3v12" />
+						<path d="m7 10 5 5 5-5" />
+						<path d="M5 21h14" />
+					</svg>
+					<span id="download-label">Download</span>
+				</button>
+			</div>
+		</section>
+	</main>
+
+		<section id="what-is-clipu" class="relative overflow-hidden border-t border-hairline bg-canvas">
+			<div class="section-tint-develop pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-2xl mx-auto px-4 py-20 text-center">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink">What is ClipU?</h2>
+				<p class="mt-4 text-lg text-body leading-8">
+					ClipU is a browser tool that turns any YouTube video into a downloadable clip. Paste a link,
+					drag two handles to the moment you want, and export it as an MP4 or MP3 — the trimming
+					happens on the fly, at your original video's quality, with nothing to install and nothing
+					to sign up for.
+				</p>
+			</div>
+		</section>
+
+		<section id="who-its-for" class="relative overflow-hidden border-t border-hairline bg-canvas-soft">
+			<div class="section-tint-preview pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-3xl mx-auto px-4 py-20">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink text-center">Who it's for</h2>
+				<dl class="mt-10 grid sm:grid-cols-2 gap-x-10 gap-y-8">
+					<div>
+						<dt class="text-base font-medium text-ink">Video editors</dt>
+						<dd class="mt-1 text-base text-body leading-7">
+							Pull a reference clip or b-roll moment out of a long video without opening an editor
+							or waiting on a full download.
+						</dd>
+					</div>
+					<div>
+						<dt class="text-base font-medium text-ink">Marketing &amp; ad professionals</dt>
+						<dd class="mt-1 text-base text-body leading-7">
+							Grab the exact ten seconds worth quoting in a deck, a pitch, or a social post — no
+							render queue, no export settings.
+						</dd>
+					</div>
+					<div>
+						<dt class="text-base font-medium text-ink">Content creators</dt>
+						<dd class="mt-1 text-base text-body leading-7">
+							Turn a highlight from a long-form video into a short clip for reposting, on your own
+							time, without a subscription.
+						</dd>
+					</div>
+					<div>
+						<dt class="text-base font-medium text-ink">Students &amp; professionals</dt>
+						<dd class="mt-1 text-base text-body leading-7">
+							Save a specific segment of a lecture, talk, or interview to reference later — audio
+							only, if that's all you need.
+						</dd>
+					</div>
+				</dl>
+			</div>
+		</section>
+
+		<section id="how-it-works" class="relative overflow-hidden border-t border-hairline bg-canvas">
+			<div class="section-tint-ship pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-2xl mx-auto px-4 py-20">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink text-center">How it works</h2>
+				<ol class="mt-12 flex flex-col gap-10">
+					<li class="flex gap-5">
+						<span class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-ink text-on-primary font-mono text-sm">1</span>
+						<div>
+							<p class="text-base font-medium text-ink">Paste the link</p>
+							<p class="mt-1 text-base text-body leading-7">
+								Drop in any public YouTube URL. ClipU fetches the title, thumbnail, duration, and
+								the resolutions it was uploaded in.
+							</p>
+						</div>
+					</li>
+					<li class="flex gap-5">
+						<span class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-ink text-on-primary font-mono text-sm">2</span>
+						<div>
+							<p class="text-base font-medium text-ink">Trim the moment</p>
+							<p class="mt-1 text-base text-body leading-7">
+								Drag the two handles to your start and end point. The preview and the estimated
+								file size update live as you move them.
+							</p>
+						</div>
+					</li>
+					<li class="flex gap-5">
+						<span class="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-ink text-on-primary font-mono text-sm">3</span>
+						<div>
+							<p class="text-base font-medium text-ink">Pick a format and download</p>
+							<p class="mt-1 text-base text-body leading-7">
+								Choose MP4 for video at your selected quality, or MP3 for audio only. Your clip
+								downloads straight to your device.
+							</p>
+						</div>
+					</li>
+				</ol>
+			</div>
+		</section>
+
+		<section id="how-it-helps" class="relative overflow-hidden border-t border-hairline bg-canvas-soft">
+			<div class="section-tint-develop pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-2xl mx-auto px-4 py-20">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink text-center">How it helps</h2>
+				<ul class="mt-10 flex flex-col gap-5">
+					{[
+						['Free', 'No plan, no credits, no watermark on your download.'],
+						['No login', 'Nothing to sign up for and nothing tied to an account.'],
+						['Simple', 'One page, one job: paste, trim, download. No settings to learn.'],
+						['Original quality', 'Exports at the resolution the video was actually uploaded in.'],
+					].map(([label, desc]) => (
+						<li class="flex gap-3">
+							<svg class="shrink-0 mt-0.5 text-ink" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M20 6 9 17l-5-5" />
+							</svg>
+							<p class="text-base text-body leading-7">
+								<span class="text-ink font-medium">{label}.</span> {desc}
+							</p>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section id="faq" class="relative overflow-hidden border-t border-hairline bg-canvas">
+			<div class="section-tint-preview pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-2xl mx-auto px-4 py-20">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink text-center">Frequently asked questions</h2>
+				<div class="mt-10 flex flex-col divide-y divide-hairline">
+					{faqs.map(([q, a]) => (
+						<details class="group py-4">
+							<summary class="flex items-center justify-between gap-4 cursor-pointer list-none text-base font-medium text-ink">
+								{q}
+								<svg class="shrink-0 text-mute transition-transform group-open:rotate-45" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 5v14M5 12h14" />
+								</svg>
+							</summary>
+							<p class="mt-2 text-base text-body leading-7">{a}</p>
+						</details>
+					))}
+				</div>
+			</div>
+
+			<script type="application/ld+json" set:html={JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'FAQPage',
+				mainEntity: faqs.map(([q, a]) => ({
+					'@type': 'Question',
+					name: q,
+					acceptedAnswer: { '@type': 'Answer', text: a },
+				})),
+			})} />
+		</section>
+
+		<section id="about" class="relative overflow-hidden border-t border-hairline bg-canvas-soft">
+			<div class="section-tint-ship pointer-events-none absolute inset-x-0 top-0 h-[300px] opacity-[0.18] blur-3xl"></div>
+			<div class="relative max-w-2xl mx-auto px-4 py-20 text-body leading-7">
+				<h2 class="text-[32px] font-bold leading-9 tracking-[-1.28px] text-ink text-center">
+					ClipU: The Free Online YouTube Video Cutter
+				</h2>
+
+				<p class="mt-6">
+					ClipU is a free online YouTube video cutter that lets you turn any public YouTube video
+					into a downloadable clip in seconds. Paste a link, drag the trim handles — or type the
+					exact start and end time into the boxes above the timeline — and export the moment you
+					need as an MP4 or MP3. No software, no sign-up, and no watermark. As an online YouTube
+					video cutter and downloader, ClipU handles the entire job in your browser: fetching the
+					video, trimming it to the range you set, and encoding the output at your original
+					video's resolution.
+				</p>
+
+				<p class="mt-4">
+					Video editors use it to pull a quick reference clip without opening a full editor.
+					Marketers grab the ten seconds worth quoting for a deck or a social post. Students save a
+					segment of a lecture to revisit later. Because it works entirely online, with no installs
+					and no plugins, ClipU has become one of the best YouTube video cutter online tools for
+					people who just need a fast, one-off clip rather than a full editing suite. Every export
+					runs through the same online YouTube video cutter and download pipeline: trim in the
+					browser, then download the finished file straight to your device — free YouTube video
+					cutter online, start to finish.
+				</p>
+
+				<p class="mt-4">
+					Unlike a YouTube video cutter app you'd have to install and keep updated, ClipU runs
+					straight from the address bar on desktop or mobile. Once your video loads, drag the two
+					handles across the timeline, or type the start and end time directly into the boxes —
+					useful when you already know you want, say, 1:24 to 1:47, and don't want to fight a
+					slider to land on the exact second.
+				</p>
+
+				<h3 class="mt-8 text-lg font-semibold text-ink">
+					How can I download an audio file from a YouTube link?
+				</h3>
+				<p class="mt-2">
+					Paste the link into ClipU, wait for it to load, switch the format toggle to MP3, set your
+					start and end point, and hit download. The audio-only file downloads straight to your
+					device — no video track, no extra software, no browser extension.
+				</p>
+
+				<h3 class="mt-6 text-lg font-semibold text-ink">How to convert a YouTube link to audio?</h3>
+				<p class="mt-2">
+					Converting a YouTube link to audio works the same way: paste the URL, select MP3 as the
+					output format, and download. ClipU converts and downloads the audio range you select in
+					one step, so there's nothing left to convert afterward.
+				</p>
+
+				<h3 class="mt-6 text-lg font-semibold text-ink">
+					How do I download a song from a YouTube link?
+				</h3>
+				<p class="mt-2">
+					If the song is in a public YouTube video, paste that link into ClipU, trim to just the
+					section you want — or leave the full range for the whole track — choose MP3, and
+					download. It's the same flow whether you're clipping a chorus or the entire song.
+				</p>
+
+				<h3 class="mt-6 text-lg font-semibold text-ink">How to convert YouTube to MP3 legally?</h3>
+				<p class="mt-2">
+					Only convert and download videos you own the rights to, that are licensed for personal
+					use, or that are in the public domain — downloading copyrighted music without permission
+					isn't legal in most places, regardless of the tool used. ClipU doesn't store or
+					redistribute anything; it simply gives you the file you selected, once, for your own use.
+				</p>
+
+				<p class="mt-6">
+					Whether you need a YouTube video cutter online for a quick highlight clip or want to
+					download audio from a YouTube video for offline listening, ClipU keeps the process to
+					three steps: paste, trim, download. It's free, requires no login, and works with any
+					public YouTube video.
+				</p>
+			</div>
+		</section>
 </Layout>
+
+<style>
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes logo-float {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-6px);
+		}
+	}
+</style>
+
+<script>
+	import { estimateSizeMB } from '../lib/size-estimate';
+
+	type VideoInfo = {
+		id: string;
+		title: string;
+		duration: number;
+		thumbnail: string;
+		qualities: number[];
+	};
+
+	const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+	const urlForm = $<HTMLFormElement>('url-form');
+	const urlInput = $<HTMLInputElement>('url-input');
+	const loadBtn = $<HTMLButtonElement>('load-btn');
+	const errorEl = $<HTMLParagraphElement>('error');
+	const editor = $<HTMLElement>('editor');
+	const thumb = $<HTMLImageElement>('thumb');
+	const titleEl = $<HTMLParagraphElement>('title');
+	const durationEl = $<HTMLParagraphElement>('duration');
+	const startRange = $<HTMLInputElement>('start-range');
+	const endRange = $<HTMLInputElement>('end-range');
+	const trimFill = $<HTMLDivElement>('trim-fill');
+	const startLabel = $<HTMLInputElement>('start-time-input');
+	const endLabel = $<HTMLInputElement>('end-time-input');
+	const preview = $<HTMLIFrameElement>('preview');
+	const qualitySelect = $<HTMLSelectElement>('quality');
+	const sizeEstimateEl = $<HTMLParagraphElement>('size-estimate');
+	const downloadBtn = $<HTMLButtonElement>('download-btn');
+	const downloadLabel = $<HTMLSpanElement>('download-label');
+	const downloadIcon = $<SVGElement>('download-icon');
+	const formatIndicator = $<HTMLDivElement>('format-indicator');
+	const formatBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.format-btn'));
+
+	let currentUrl = '';
+	let currentVideo: VideoInfo | null = null;
+	let format: 'mp4' | 'mp3' = 'mp4';
+
+	const taglineEl = document.getElementById('tagline');
+	const taglines = [
+		'Paste a YouTube link, trim the exact moment, download MP4 or MP3.',
+		'No login, no upload wait, no clutter.',
+		"Free, and it keeps your video's original quality.",
+		'Built for editors, marketers, and anyone who just needs one clip.',
+	];
+	if (taglineEl && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		let taglineIndex = 0;
+		setInterval(() => {
+			taglineEl.style.opacity = '0';
+			taglineEl.style.transform = 'translateY(4px)';
+			setTimeout(() => {
+				taglineIndex = (taglineIndex + 1) % taglines.length;
+				taglineEl.textContent = taglines[taglineIndex];
+				taglineEl.style.opacity = '1';
+				taglineEl.style.transform = 'translateY(0)';
+			}, 300);
+		}, 4000);
+	}
+
+	function fmtTime(sec: number): string {
+		const m = Math.floor(sec / 60);
+		const s = Math.floor(sec % 60);
+		return `${m}:${s.toString().padStart(2, '0')}`;
+	}
+
+	function parseTime(input: string): number | null {
+		const trimmed = input.trim();
+		if (/^\d+:\d{1,2}$/.test(trimmed)) {
+			const [m, s] = trimmed.split(':').map(Number);
+			return m * 60 + s;
+		}
+		if (/^\d+$/.test(trimmed)) return Number(trimmed);
+		return null;
+	}
+
+	function updateSizeEstimate() {
+		if (!currentVideo) return;
+		const start = Number(startRange.value);
+		const end = Number(endRange.value);
+		const duration = Math.max(0, end - start);
+		const height = format === 'mp4' ? Number(qualitySelect.value) : undefined;
+		const mb = estimateSizeMB(duration, format, height);
+		sizeEstimateEl.textContent = `~${mb.toFixed(1)} MB`;
+	}
+
+	function updateLabels() {
+		startLabel.value = fmtTime(Number(startRange.value));
+		endLabel.value = fmtTime(Number(endRange.value));
+
+		const max = Number(startRange.max) || 1;
+		const startPct = (Number(startRange.value) / max) * 100;
+		const endPct = (Number(endRange.value) / max) * 100;
+		trimFill.style.left = `${startPct}%`;
+		trimFill.style.right = `${100 - endPct}%`;
+	}
+
+	function updatePreview() {
+		if (!currentVideo) return;
+		const start = Number(startRange.value);
+		const end = Number(endRange.value);
+		preview.src = `https://www.youtube.com/embed/${currentVideo.id}?start=${start}&end=${end}`;
+	}
+
+	startRange.addEventListener('input', () => {
+		if (Number(startRange.value) >= Number(endRange.value)) {
+			startRange.value = String(Number(endRange.value) - 1);
+		}
+		updateLabels();
+		updateSizeEstimate();
+		updatePreview();
+	});
+	endRange.addEventListener('input', () => {
+		if (Number(endRange.value) <= Number(startRange.value)) {
+			endRange.value = String(Number(startRange.value) + 1);
+		}
+		updateLabels();
+		updateSizeEstimate();
+		updatePreview();
+	});
+	qualitySelect.addEventListener('change', updateSizeEstimate);
+
+	function applyTypedTime(input: HTMLInputElement, range: HTMLInputElement) {
+		const seconds = parseTime(input.value);
+		if (seconds === null) {
+			updateLabels();
+			return;
+		}
+		range.value = String(seconds);
+		range.dispatchEvent(new Event('input'));
+	}
+	startLabel.addEventListener('change', () => applyTypedTime(startLabel, startRange));
+	endLabel.addEventListener('change', () => applyTypedTime(endLabel, endRange));
+	startLabel.addEventListener('keydown', (e) => e.key === 'Enter' && startLabel.blur());
+	endLabel.addEventListener('keydown', (e) => e.key === 'Enter' && endLabel.blur());
+
+	formatBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			format = btn.dataset.format as 'mp4' | 'mp3';
+			const isMp3 = format === 'mp3';
+			formatIndicator.style.transform = isMp3 ? 'translateX(100%)' : 'translateX(0)';
+			formatBtns.forEach((b) => {
+				const active = b === btn;
+				b.classList.toggle('text-on-primary', active);
+				b.classList.toggle('text-ink', !active);
+				b.setAttribute('aria-pressed', String(active));
+			});
+			qualitySelect.classList.toggle('invisible', isMp3);
+			updateSizeEstimate();
+		});
+	});
+
+	urlForm.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		errorEl.classList.add('hidden');
+		editor.classList.add('hidden');
+		currentUrl = urlInput.value.trim();
+
+		loadBtn.disabled = true;
+		loadBtn.textContent = 'Loading…';
+
+		try {
+			const res = await fetch('/api/metadata', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ url: currentUrl }),
+			});
+			const data = await res.json();
+
+			if (!res.ok) {
+				errorEl.textContent = data.error ?? 'Something went wrong';
+				errorEl.classList.remove('hidden');
+				return;
+			}
+
+			currentVideo = data;
+			thumb.src = data.thumbnail;
+			thumb.alt = data.title;
+			thumb.classList.remove('hidden');
+			titleEl.textContent = data.title;
+			durationEl.textContent = fmtTime(data.duration);
+
+			startRange.max = String(data.duration);
+			endRange.max = String(data.duration);
+			startRange.value = '0';
+			endRange.value = String(data.duration);
+			updateLabels();
+
+			qualitySelect.innerHTML = data.qualities
+				.map((h: number) => `<option value="${h}">${h}p</option>`)
+				.join('');
+			qualitySelect.value = String(data.qualities.at(-1));
+
+			preview.classList.remove('hidden');
+			updatePreview();
+
+			updateSizeEstimate();
+			editor.classList.remove('hidden');
+		} finally {
+			loadBtn.disabled = false;
+			loadBtn.textContent = 'Load';
+		}
+	});
+
+	downloadBtn.addEventListener('click', async () => {
+		if (!currentVideo) return;
+		downloadBtn.disabled = true;
+		downloadIcon.classList.add('animate-spin');
+		downloadLabel.textContent = 'Clipping…';
+
+		try {
+			const res = await fetch('/api/clip', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					url: currentUrl,
+					start: Number(startRange.value),
+					end: Number(endRange.value),
+					quality: Number(qualitySelect.value),
+					format,
+				}),
+			});
+			if (!res.ok) throw new Error();
+
+			const blob = await res.blob();
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = `clip.${format}`;
+			a.click();
+			URL.revokeObjectURL(a.href);
+		} catch {
+			errorEl.textContent = 'Clip failed, try a shorter range';
+			errorEl.classList.remove('hidden');
+		} finally {
+			downloadBtn.disabled = false;
+			downloadIcon.classList.remove('animate-spin');
+			downloadLabel.textContent = 'Download';
+		}
+	});
+</script>

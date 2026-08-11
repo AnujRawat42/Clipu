@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const features: [string, string][] = [
+	['Paste any public link', 'Drop in a standard youtube.com or youtu.be URL — no account or API key needed.'],
+	['Instant metadata', "Title, thumbnail, duration, and every resolution the video was actually uploaded in, fetched the moment you paste."],
+	['Frame-level trim', 'Drag two handles on a single track to set your start and end point, down to the second.'],
+	['Quality matched to source', 'Export at any resolution the original video offers — 144p up to whatever it was uploaded in.'],
+	['Live size estimate', 'See the approximate file size update as you move the trim handles, before you download anything.'],
+	['Inline preview', "Watch the exact range you've selected before committing to an export."],
+	['MP4 or MP3', 'Export video with audio, or strip to audio-only for a smaller, faster download.'],
+	['No login, no watermark', 'Nothing is added to your file and nothing is tied to an account.'],
+];
+---
+
+<Layout title="Features — ClipU" description="Everything ClipU does: paste, trim, preview, and export MP4 or MP3, free with no login.">
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-4 text-center">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px]">Features</h1>
+			<p class="mt-4 text-lg text-body leading-8">
+				One tool, one job. Everything below is what ClipU actually does — nothing hidden behind a
+				paywall.
+			</p>
+		</div>
+
+		<div class="max-w-2xl mx-auto px-4 py-16">
+			<dl class="flex flex-col divide-y divide-hairline">
+				{
+					features.map(([title, desc]) => (
+						<div class="py-6 grid sm:grid-cols-[200px_1fr] gap-x-8 gap-y-1">
+							<dt class="text-base font-medium text-ink">{title}</dt>
+							<dd class="text-base text-body leading-7">{desc}</dd>
+						</div>
+					))
+				}
+			</dl>
+
+			<div class="mt-12 flex justify-center">
+				<a
+					href="/"
+					class="rounded-pill bg-ink text-on-primary px-5 h-10 inline-flex items-center text-base font-medium hover:opacity-90"
+				>
+					Try it now
+				</a>
+			</div>
+		</div>
+	</main>
+</Layout>

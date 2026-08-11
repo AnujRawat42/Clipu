@@ -1,0 +1,99 @@
+---
+const links = [
+	{ href: '/', label: 'Home' },
+	{ href: '/features', label: 'Features' },
+	{ href: '/how-it-works', label: 'How it works' },
+	{ href: '/blog', label: 'Blogs' },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 bg-canvas/90 backdrop-blur border-b border-hairline">
+	<nav class="max-w-5xl mx-auto h-16 px-4 flex items-center justify-between">
+		<a href="/" class="flex items-center gap-1 text-base font-semibold tracking-[-0.6px] text-ink shrink-0">
+			<img src="/android-chrome-192x192.png" alt="" class="h-7 w-7 rounded-md" />
+			ClipU
+		</a>
+
+		<ul class="hidden sm:flex items-center gap-1 text-sm">
+			{
+				links.map((link) => (
+					<li>
+						<a
+							href={link.href}
+							aria-current={path === link.href ? 'page' : undefined}
+							class:list={[
+								'block px-3 py-1.5 rounded-full transition-colors hover:bg-canvas-soft-2',
+								path === link.href ? 'text-ink font-medium' : 'text-body',
+							]}
+						>
+							{link.label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<div class="flex items-center gap-2">
+			<button
+				id="theme-toggle"
+				type="button"
+				aria-label="Toggle dark mode"
+				class="flex h-9 w-9 items-center justify-center rounded-full border border-hairline text-ink hover:bg-canvas-soft-2 shrink-0"
+			>
+				<svg
+					class="icon-moon"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg
+				>
+				<svg
+					class="icon-sun"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"
+					></path></svg
+				>
+			</button>
+		</div>
+	</nav>
+
+	<ul class="sm:hidden flex items-center gap-1 text-sm px-4 pb-3 overflow-x-auto">
+		{
+			links.map((link) => (
+				<li class="shrink-0">
+					<a
+						href={link.href}
+						aria-current={path === link.href ? 'page' : undefined}
+						class:list={[
+							'block px-3 py-1.5 rounded-full',
+							path === link.href ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body',
+						]}
+					>
+						{link.label}
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</header>
+
+<script>
+	const btn = document.getElementById('theme-toggle')!;
+	btn.addEventListener('click', () => {
+		const dark = !document.documentElement.classList.contains('dark');
+		document.documentElement.classList.toggle('dark', dark);
+		localStorage.setItem('clipu-theme', dark ? 'dark' : 'light');
+	});
+</script>

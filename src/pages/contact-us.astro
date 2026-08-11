@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+	title="Contact Us — ClipU"
+	description="Get in touch with the ClipU team for support, bug reports, or feedback about the YouTube video cutter."
+>
+	<main class="bg-canvas-soft text-ink font-sans">
+		<div class="max-w-2xl mx-auto px-4 pt-20 pb-16 text-center">
+			<h1 class="text-[32px] font-semibold leading-10 tracking-[-1.28px]">Contact us</h1>
+			<p class="mt-4 text-lg text-body leading-8">
+				Found a bug, have a feature request, or something not working right? We'd like to hear
+				about it.
+			</p>
+
+			<div class="mt-10 flex flex-col gap-4 items-center text-base text-body leading-7">
+				<p>
+					Email us at
+					<a href="mailto:support@ytclipu.com" class="text-link hover:underline font-medium">support@ytclipu.com</a>
+				</p>
+				<p class="max-w-md text-sm text-mute">
+					For copyright or takedown requests, please include the YouTube link in question and a
+					description of the issue so we can look into it quickly.
+				</p>
+			</div>
+
+			<div class="mt-14 flex justify-center">
+				<a
+					href="/"
+					class="rounded-pill bg-ink text-on-primary px-5 h-10 inline-flex items-center text-base font-medium hover:opacity-90"
+				>
+					Back to ClipU
+				</a>
+			</div>
+		</div>
+	</main>
+</Layout>
