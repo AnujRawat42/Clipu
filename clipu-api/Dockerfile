@@ -1,10 +1,9 @@
 FROM node:22-slim
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends ffmpeg curl ca-certificates python3 \
+	&& apt-get install -y --no-install-recommends ffmpeg python3 python3-pip \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
-	&& chmod a+rx /usr/local/bin/yt-dlp
+	&& pip install --break-system-packages --no-cache-dir -U yt-dlp bgutil-ytdlp-pot-provider
 
 WORKDIR /app
 COPY package.json ./

@@ -10,10 +10,14 @@ export function isValidYoutubeUrl(url) {
 	return YOUTUBE_URL_RE.test(url);
 }
 
-// ponytail: android client spoof dodges YouTube's datacenter-IP bot check
-// without cookies/proxy; if it stops working, next step is a PO-token
-// provider sidecar (e.g. bgutil-ytdlp-pot-provider), not personal cookies.
-export const EXTRACTOR_ARGS = ['--extractor-args', 'youtube:player_client=android'];
+// PO-token provider dodges YouTube's datacenter-IP bot check without
+// personal cookies. Points yt-dlp's bgutil-ytdlp-pot-provider plugin at the
+// sidecar service (see clipu-api/pot-provider/ + README for deploy steps).
+const POT_BASE_URL = process.env.POT_PROVIDER_URL ?? 'http://127.0.0.1:4416';
+export const EXTRACTOR_ARGS = [
+	'--extractor-args',
+	`youtubepot-bgutilhttp:base_url=${POT_BASE_URL}`,
+];
 
 export async function getVideoInfo(url) {
 	const { stdout } = await run(
