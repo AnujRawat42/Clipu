@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { readdir, readFile, unlink } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { isValidYoutubeUrl, getVideoInfo } from './yt.js';
+import { isValidYoutubeUrl, getVideoInfo, EXTRACTOR_ARGS } from './yt.js';
 
 const run = promisify(execFile);
 
@@ -62,6 +62,7 @@ app.post('/api/clip', async (req, res) => {
 		`*${start}-${end}`,
 		'--no-playlist',
 		'--no-warnings',
+		...EXTRACTOR_ARGS,
 		...(format === 'mp3'
 			? ['-x', '--audio-format', 'mp3']
 			: [
@@ -92,7 +93,8 @@ app.post('/api/clip', async (req, res) => {
 			'Content-Disposition': `attachment; filename="clip.${format}"`,
 		});
 		res.send(buffer);
-	} catch {
+	} catch (err) {
+		console.error('clip failed:', err.stderr ?? err.message ?? err);
 		res.status(502).json({ error: 'Clip failed' });
 	}
 });

@@ -10,10 +10,17 @@ export function isValidYoutubeUrl(url) {
 	return YOUTUBE_URL_RE.test(url);
 }
 
+// ponytail: android client spoof dodges YouTube's datacenter-IP bot check
+// without cookies/proxy; if it stops working, next step is a PO-token
+// provider sidecar (e.g. bgutil-ytdlp-pot-provider), not personal cookies.
+export const EXTRACTOR_ARGS = ['--extractor-args', 'youtube:player_client=android'];
+
 export async function getVideoInfo(url) {
-	const { stdout } = await run('yt-dlp', ['-j', '--no-warnings', '--no-playlist', url], {
-		maxBuffer: 1024 * 1024 * 20,
-	});
+	const { stdout } = await run(
+		'yt-dlp',
+		['-j', '--no-warnings', '--no-playlist', ...EXTRACTOR_ARGS, url],
+		{ maxBuffer: 1024 * 1024 * 20 },
+	);
 	const info = JSON.parse(stdout);
 	const qualities = [
 		...new Set(
