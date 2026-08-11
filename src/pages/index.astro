@@ -450,6 +450,8 @@ const faqs: [string, string][] = [
 <script>
 	import { estimateSizeMB } from '../lib/size-estimate';
 
+	const API_URL = import.meta.env.PUBLIC_API_URL ?? '';
+
 	type VideoInfo = {
 		id: string;
 		title: string;
@@ -609,7 +611,7 @@ const faqs: [string, string][] = [
 		loadBtn.textContent = 'Loading…';
 
 		try {
-			const res = await fetch('/api/metadata', {
+			const res = await fetch(`${API_URL}/api/metadata`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ url: currentUrl }),
@@ -658,7 +660,7 @@ const faqs: [string, string][] = [
 		downloadLabel.textContent = 'Clipping…';
 
 		try {
-			const res = await fetch('/api/clip', {
+			const res = await fetch(`${API_URL}/api/clip`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

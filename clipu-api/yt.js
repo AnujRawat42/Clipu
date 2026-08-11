@@ -6,19 +6,11 @@ const run = promisify(execFile);
 const YOUTUBE_URL_RE =
 	/^https?:\/\/(www\.|m\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/;
 
-export function isValidYoutubeUrl(url: string): boolean {
+export function isValidYoutubeUrl(url) {
 	return YOUTUBE_URL_RE.test(url);
 }
 
-export type VideoInfo = {
-	id: string;
-	title: string;
-	duration: number;
-	thumbnail: string;
-	qualities: number[];
-};
-
-export async function getVideoInfo(url: string): Promise<VideoInfo> {
+export async function getVideoInfo(url) {
 	const { stdout } = await run('yt-dlp', ['-j', '--no-warnings', '--no-playlist', url], {
 		maxBuffer: 1024 * 1024 * 20,
 	});
@@ -26,10 +18,10 @@ export async function getVideoInfo(url: string): Promise<VideoInfo> {
 	const qualities = [
 		...new Set(
 			(info.formats ?? [])
-				.filter((f: any) => f.vcodec && f.vcodec !== 'none' && f.height)
-				.map((f: any) => f.height as number),
+				.filter((f) => f.vcodec && f.vcodec !== 'none' && f.height)
+				.map((f) => f.height),
 		),
-	].sort((a, b) => (a as number) - (b as number)) as number[];
+	].sort((a, b) => a - b);
 
 	return {
 		id: info.id,
