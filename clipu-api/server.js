@@ -28,7 +28,8 @@ app.post('/api/metadata', async (req, res) => {
 	try {
 		const info = await getVideoInfo(url);
 		res.json(info);
-	} catch {
+	} catch (err) {
+		console.error('metadata failed:', err.stderr ?? err.message ?? err);
 		res.status(502).json({ error: 'Could not fetch video info' });
 	}
 });
