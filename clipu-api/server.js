@@ -16,11 +16,7 @@ const MAX_CLIP_SECONDS = 600;
 
 const app = express();
 app.use(express.json());
-app.use(
-	cors({
-		origin: process.env.ALLOWED_ORIGIN?.split(',') ?? '*',
-	}),
-);
+app.use(cors());
 
 app.post('/api/metadata', async (req, res) => {
 	const { url } = req.body ?? {};
