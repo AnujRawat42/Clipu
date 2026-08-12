@@ -20,15 +20,11 @@ export const EXTRACTOR_ARGS = [
 ];
 
 export async function getVideoInfo(url) {
-	// ponytail: -v instead of --no-warnings is a temporary debug swap to see
-	// whether the bgutil-ytdlp-pot-provider plugin actually loads; revert to
-	// --no-warnings once the POT setup is confirmed working.
-	const { stdout, stderr } = await run(
+	const { stdout } = await run(
 		'yt-dlp',
-		['-j', '-v', '--no-playlist', ...EXTRACTOR_ARGS, url],
+		['-j', '--no-warnings', '--no-playlist', ...EXTRACTOR_ARGS, url],
 		{ maxBuffer: 1024 * 1024 * 20 },
 	);
-	console.error('yt-dlp verbose stderr:\n', stderr);
 	const info = JSON.parse(stdout);
 	const qualities = [
 		...new Set(
