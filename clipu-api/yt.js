@@ -17,14 +17,22 @@ const POT_BASE_URL = process.env.POT_PROVIDER_URL ?? 'http://127.0.0.1:4416';
 export const EXTRACTOR_ARGS = [
 	'--extractor-args',
 	`youtubepot-bgutilhttp:base_url=${POT_BASE_URL}`,
+	// forces the "web" client so the POT token above is actually consulted;
+	// mobile clients (android/android_vr) require real login regardless of it.
+	'--extractor-args',
+	'youtube:player_client=web',
 ];
 
 export async function getVideoInfo(url) {
-	const { stdout } = await run(
+	// ponytail: -v instead of --no-warnings is a temporary debug swap to
+	// confirm the POT sidecar is actually hit with player_client=web; revert
+	// to --no-warnings once confirmed working.
+	const { stdout, stderr } = await run(
 		'yt-dlp',
-		['-j', '--no-warnings', '--no-playlist', ...EXTRACTOR_ARGS, url],
+		['-j', '-v', '--no-playlist', ...EXTRACTOR_ARGS, url],
 		{ maxBuffer: 1024 * 1024 * 20 },
 	);
+	console.error('yt-dlp verbose stderr:\n', stderr);
 	const info = JSON.parse(stdout);
 	const qualities = [
 		...new Set(
