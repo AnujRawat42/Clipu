@@ -20,21 +20,25 @@ export function isValidYoutubeUrl(url) {
 const COOKIES_SRC = process.env.COOKIES_FILE ?? '/etc/secrets/cookies.txt';
 const COOKIES_PATH = path.join(os.tmpdir(), 'clipu-cookies.txt');
 
-function cookieArgs() {
+// Logged-in sessions default to YouTube's tv_downgraded client, which is
+// currently broken and fails with "The page needs to be reloaded" (yt-dlp#17389).
+const CLIENT_ARGS = ['--extractor-args', 'youtube:player_client=default,web_embedded'];
+
+function ytdlpArgs() {
 	if (!existsSync(COOKIES_SRC)) {
 		console.warn(`no cookies at ${COOKIES_SRC}; YouTube will likely block requests`);
-		return [];
+		return CLIENT_ARGS;
 	}
 	copyFileSync(COOKIES_SRC, COOKIES_PATH);
-	return ['--cookies', COOKIES_PATH];
+	return [...CLIENT_ARGS, '--cookies', COOKIES_PATH];
 }
 
-export const COOKIE_ARGS = cookieArgs();
+export const YTDLP_ARGS = ytdlpArgs();
 
 export async function getVideoInfo(url) {
 	const { stdout } = await run(
 		'yt-dlp',
-		['-j', '--no-warnings', '--no-playlist', ...COOKIE_ARGS, url],
+		['-j', '--no-warnings', '--no-playlist', ...YTDLP_ARGS, url],
 		{ maxBuffer: 1024 * 1024 * 20 },
 	);
 	const info = JSON.parse(stdout);
