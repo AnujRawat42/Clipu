@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { readdir, readFile, unlink } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { isValidYoutubeUrl, getVideoInfo, EXTRACTOR_ARGS } from './yt.js';
+import { isValidYoutubeUrl, getVideoInfo, COOKIE_ARGS } from './yt.js';
 
 const run = promisify(execFile);
 
@@ -62,7 +62,7 @@ app.post('/api/clip', async (req, res) => {
 		`*${start}-${end}`,
 		'--no-playlist',
 		'--no-warnings',
-		...EXTRACTOR_ARGS,
+		...COOKIE_ARGS,
 		...(format === 'mp3'
 			? ['-x', '--audio-format', 'mp3']
 			: [

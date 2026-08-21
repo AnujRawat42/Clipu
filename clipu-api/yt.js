@@ -1,5 +1,8 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { copyFileSync, existsSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const run = promisify(execFile);
 
@@ -10,29 +13,30 @@ export function isValidYoutubeUrl(url) {
 	return YOUTUBE_URL_RE.test(url);
 }
 
-// PO-token provider dodges YouTube's datacenter-IP bot check without
-// personal cookies. Points yt-dlp's bgutil-ytdlp-pot-provider plugin at the
-// sidecar service (see clipu-api/pot-provider/ + README for deploy steps).
-const POT_BASE_URL = process.env.POT_PROVIDER_URL ?? 'http://127.0.0.1:4416';
-export const EXTRACTOR_ARGS = [
-	'--extractor-args',
-	`youtubepot-bgutilhttp:base_url=${POT_BASE_URL}`,
-	// forces the "web" client so the POT token above is actually consulted;
-	// mobile clients (android/android_vr) require real login regardless of it.
-	'--extractor-args',
-	'youtube:player_client=web',
-];
+// YouTube blocks datacenter IPs with "Sign in to confirm you're not a bot",
+// so yt-dlp needs cookies from a logged-in (throwaway) account. Render mounts
+// secret files read-only, but yt-dlp rewrites the jar after each run, so it
+// works from a writable copy.
+const COOKIES_SRC = process.env.COOKIES_FILE ?? '/etc/secrets/cookies.txt';
+const COOKIES_PATH = path.join(os.tmpdir(), 'clipu-cookies.txt');
+
+function cookieArgs() {
+	if (!existsSync(COOKIES_SRC)) {
+		console.warn(`no cookies at ${COOKIES_SRC}; YouTube will likely block requests`);
+		return [];
+	}
+	copyFileSync(COOKIES_SRC, COOKIES_PATH);
+	return ['--cookies', COOKIES_PATH];
+}
+
+export const COOKIE_ARGS = cookieArgs();
 
 export async function getVideoInfo(url) {
-	// ponytail: -v instead of --no-warnings is a temporary debug swap to
-	// confirm the POT sidecar is actually hit with player_client=web; revert
-	// to --no-warnings once confirmed working.
-	const { stdout, stderr } = await run(
+	const { stdout } = await run(
 		'yt-dlp',
-		['-j', '-v', '--no-playlist', ...EXTRACTOR_ARGS, url],
+		['-j', '--no-warnings', '--no-playlist', ...COOKIE_ARGS, url],
 		{ maxBuffer: 1024 * 1024 * 20 },
 	);
-	console.error('yt-dlp verbose stderr:\n', stderr);
 	const info = JSON.parse(stdout);
 	const qualities = [
 		...new Set(
